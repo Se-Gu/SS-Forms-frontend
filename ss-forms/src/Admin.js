@@ -76,8 +76,9 @@ const Admin = () => {
           console.error('Error:', error);
         }
       };
-    
+      
   return (
+    <div className="container">
     <div className="container">
       <h1>Admin Panel</h1>
       <div className="user-list-container">
@@ -115,6 +116,7 @@ const Admin = () => {
         onChange={(e) => setPassword(e.target.value)}
       />
     <button onClick={() => handleAdminRegister()}>Make this User a Admin</button>
+    </div>
     </div>
     </div>
   );
