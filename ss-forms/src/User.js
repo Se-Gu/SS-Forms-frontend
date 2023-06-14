@@ -31,7 +31,9 @@ const User = () => {
   };
   useEffect(() => {
     if (!localStorage.isToastShown) {
-      toast.success("Login successful, welcome " + username + "!");
+      toast.success("Login successful, welcome " + username + "!", {
+        autoClose: 1000,
+      });
       localStorage.setItem("isToastShown", true);
     }
   }, [username]);

@@ -10,7 +10,9 @@ const Admin = () => {
 
   useEffect(() => {
     if (!localStorage.isToastShown) {
-      toast.success("Login successful, welcome " + adminUsername + "!");
+      toast.success("Login successful, welcome " + adminUsername + "!", {
+        autoClose: 1000,
+      });
       localStorage.setItem("isToastShown", true);
     }
   }, [adminUsername]);

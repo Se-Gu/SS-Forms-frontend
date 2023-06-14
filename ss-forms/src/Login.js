@@ -37,7 +37,9 @@ const Login = () => {
         // Login failed
         if (response.status === 401) {
           // Incorrect username or password
-          toast.error("Wrong username or password");
+          toast.error("Wrong username or password", {
+            autoClose: 1000,
+          });
         } else {
           // Other error
           console.error("Login failed:", data.msg);

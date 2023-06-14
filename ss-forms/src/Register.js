@@ -6,7 +6,9 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const handleRegister = async () => {
     if (username === "" || password === "")
-      toast.error("Username or Password cannot be empty!");
+      toast.error("Username or Password cannot be empty!", {
+        autoClose: 1000,
+      });
     else {
       try {
         const response = await fetch("http://localhost:5000/api/users", {
@@ -46,7 +48,9 @@ const Register = () => {
               // Login failed
               if (response.status === 401) {
                 // Incorrect username or password
-                toast.error("Wrong username or password");
+                toast.error("Wrong username or password", {
+                  autoClose: 1000,
+                });
               } else {
                 // Other error
                 console.error("Login failed:", data.msg);
@@ -58,7 +62,9 @@ const Register = () => {
           }
         } else {
           // Username already exists or other error
-          toast.error("Username already exists");
+          toast.error("Username already exists", {
+            autoClose: 1000,
+          });
           console.error(data.msg);
         }
       } catch (error) {
