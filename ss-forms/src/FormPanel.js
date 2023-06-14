@@ -1,183 +1,49 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import QuestionInput from "./QuestionInput";
+import FormPreview from "./FormPreview";
 
 const FormPanel = () => {
-  const [formTitle, setFormTitle] = useState("");
-  const [formQuestions, setFormQuestions] = useState(["", "", ""]);
-  const [forms, setForms] = useState([]);
-  const [delformname, setdelFormname] = useState("");
-  const [form_answers, setFormAnswers] = useState([]);
+  // State variables for form data
+  const [formName, setFormName] = useState("");
+  const [questions, setQuestions] = useState([]);
 
-  const handleCreateForm = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/forms", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title: formTitle, questions: formQuestions }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Form created successfully
-        toast.success("Form created successfully", {
-          autoClose: 1000,
-        });
-        setFormTitle("");
-        setFormQuestions(["", "", ""]);
-        console.log(data.msg);
-      } else {
-        // Form not created, error occurred
-        toast.error("There was an error in creating the form", {
-          autoClose: 1000,
-        });
-        console.error(data.msg);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-  const handleQuestionChange = (e, index) => {
-    const updatedQuestions = [...formQuestions];
-    updatedQuestions[index] = e.target.value;
-    setFormQuestions(updatedQuestions);
-  };
-  const getForms = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/getforms", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Forms retrieved successfully
-        console.log(data);
-        setForms(data);
-      } else {
-        // Error retrieving forms
-        console.error(data.msg);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
+  // Function to handle adding a question
+  const addQuestion = (question) => {
+    setQuestions([...questions, question]);
   };
 
-  const handleDeleteForm = async (title) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/forms/${title}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Form deleted successfully
-        console.log(data.msg);
-      } else {
-        // Form not found or other error
-        console.error(data.msg);
-      }
-    } catch (error) {
-      // Error occurred
-      console.error("Error:", error);
-    }
-  };
-  const getFormAnswers = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/get_form_answers"
-      );
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log(data);
-        setFormAnswers(data);
-        // Here you can process the data and update your component's state or props as necessary
-      } else {
-        console.error("Failed to fetch form answers:", data.msg);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
+  // Function to handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Implement form submission logic here
+    // You can access the form name and questions array in the state variables (formName, questions)
+    // Send the data to the backend API for saving
   };
 
   return (
     <div>
-      <div className="container">
-        <div className="create-form-container">
+      {/* Form creation page */}
+      <h2>Create Form</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Form Name:
           <input
             type="text"
-            placeholder="Form Title"
-            value={formTitle}
-            onChange={(e) => setFormTitle(e.target.value)}
+            value={formName}
+            onChange={(e) => setFormName(e.target.value)}
+            required
           />
-          <div className="form-questions">
-            <h2>Form Questions</h2>
-            {formQuestions.map((question, index) => (
-              <input
-                key={index}
-                type="text"
-                placeholder={`Question ${index + 1}`}
-                value={question}
-                onChange={(e) => handleQuestionChange(e, index)}
-              />
-            ))}
-          </div>
-          <button onClick={handleCreateForm}>Create Form</button>
-        </div>
-        <br></br>
-        <div className="delete-user-container">
-          <input
-            type="text"
-            placeholder="Form Title"
-            value={delformname}
-            onChange={(e) => setdelFormname(e.target.value)}
-          />
-          <button onClick={() => handleDeleteForm(delformname)}>
-            Delete Form
-          </button>
-        </div>
-        <div className="container">
-          <div className="form-list-container">
-            <h1>Forms List</h1>
-            <button onClick={getForms}>Get Forms</button>
-            {forms.map((form, index) => (
-              <div key={index}>
-                <h2>{form.title}</h2>
-                <ul>
-                  {form.questions.map((question, index) => (
-                    <li key={index}>{question}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <div className="form-list-container">
-            <h1>Form Answers List</h1>
-            <button onClick={getFormAnswers}>Get Form Answers</button>
-            {form_answers.map((forms, index) => (
-              <div key={index}>
-                <h2>{forms.form_title}</h2>
-                <h2>{forms.username}</h2>
-                <ul>
-                  {forms.answers.map((answers, index) => (
-                    <li key={index}>{answers}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+        </label>
+
+        {/* Question input component */}
+        <QuestionInput handleAddQuestion={addQuestion} />
+
+        <button type="submit">Save Form</button>
+      </form>
+
+      {/* Form preview component */}
+      <FormPreview formName={formName} questions={questions} />
     </div>
   );
 };
