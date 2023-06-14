@@ -1,15 +1,17 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 const User = () => {
   const [forms, setForms] = useState([]);
   const [answers, setAnswers] = useState({});
-  const username = localStorage.getItem('username');
+  const username = localStorage.getItem("username");
+
   const getForms = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/getforms', {
-        method: 'GET',
+      const response = await fetch("http://localhost:5000/api/getforms", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -24,16 +26,22 @@ const User = () => {
         console.error(data.msg);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
+  useEffect(() => {
+    if (!localStorage.isToastShown) {
+      toast.success("Login successful, welcome " + username + "!");
+      localStorage.setItem("isToastShown", true);
+    }
+  }, [username]);
   useEffect(() => {
     const newAnswers = {};
     forms.forEach((form, i) => {
       newAnswers[i] = {
         title: form.title,
         username: username,
-        answers: form.questions.map(() => '')
+        answers: form.questions.map(() => ""),
       };
     });
     setAnswers(newAnswers);
@@ -49,36 +57,39 @@ const User = () => {
 
   const handleSubmitForm = async (formIndex) => {
     if (answers[formIndex]) {
-        const submission = [
-            answers[formIndex].title,
-            answers[formIndex].username,
-            ...answers[formIndex].answers
-        ];
+      const submission = [
+        answers[formIndex].title,
+        answers[formIndex].username,
+        ...answers[formIndex].answers,
+      ];
 
-        try {
-            const response = await fetch('http://localhost:5000/api/submit_form', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ form_title: submission[0], username: submission[1], answers: submission.slice(2) }),
-            });
-    
-            const data = await response.json();
-    
-            if (response.ok) {
-                // Form submitted successfully
-                console.log(data.msg);
-            } else {
-                // Form not submitted, error occurred
-                console.error(data.msg);
-            }
-        } catch (error) {
-            console.error('Error:', error);
+      try {
+        const response = await fetch("http://localhost:5000/api/submit_form", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            form_title: submission[0],
+            username: submission[1],
+            answers: submission.slice(2),
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Form submitted successfully
+          console.log(data.msg);
+        } else {
+          // Form not submitted, error occurred
+          console.error(data.msg);
         }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
-};
-
+  };
 
   return (
     <div className="container">
@@ -96,12 +107,20 @@ const User = () => {
                   <input
                     type="text"
                     placeholder="Your answer"
-                    value={(answers[formIndex] && answers[formIndex].answers[questionIndex]) || ''}
-                    onChange={(event) => handleInputChange(formIndex, questionIndex, event)}
+                    value={
+                      (answers[formIndex] &&
+                        answers[formIndex].answers[questionIndex]) ||
+                      ""
+                    }
+                    onChange={(event) =>
+                      handleInputChange(formIndex, questionIndex, event)
+                    }
                   />
                 </li>
               ))}
-              <button onClick={() => handleSubmitForm(formIndex)}>Submit</button>
+              <button onClick={() => handleSubmitForm(formIndex)}>
+                Submit
+              </button>
             </ul>
           </div>
         ))}
