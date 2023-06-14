@@ -6,13 +6,14 @@ const Admin = () => {
   const [password, setPassword] = useState("");
   const [users, setUsers] = useState([]);
   const [delusername, setdelUsername] = useState("");
+  const adminUsername = localStorage.getItem("username");
 
   useEffect(() => {
     if (!localStorage.isToastShown) {
-      toast.success("Login successful, welcome " + username + "!");
+      toast.success("Login successful, welcome " + adminUsername + "!");
       localStorage.setItem("isToastShown", true);
     }
-  }, [username]);
+  }, [adminUsername]);
 
   const getUsers = async () => {
     try {
