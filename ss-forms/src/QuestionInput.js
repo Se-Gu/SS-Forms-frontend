@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, MenuItem, TextField, Typography } from "@mui/material";
 import { styled } from "@mui/system";
+import Box from "@mui/material/Box";
 
 const OptionsList = styled("ul")({
   paddingLeft: 0,
@@ -29,6 +30,7 @@ const QuestionInput = ({
   const [typeInput, setTypeInput] = useState("text");
   const [optionsInput, setOptionsInput] = useState([]);
   const [optionInput, setOptionInput] = useState("");
+  const [editingIndex, setEditingIndex] = useState(-1);
 
   const addQuestion = () => {
     const question = {
@@ -41,6 +43,36 @@ const QuestionInput = ({
     setTypeInput("text");
     setOptionsInput([]);
     setOptionInput("");
+  };
+
+  const editQuestion = (index) => {
+    const question = questions[index];
+    setPromptInput(question.prompt);
+    setTypeInput(question.type);
+    setOptionsInput(question.options);
+    setEditingIndex(index);
+  };
+
+  const updateQuestion = () => {
+    const updatedQuestion = {
+      prompt: promptInput,
+      type: typeInput,
+      options: optionsInput,
+    };
+    handleUpdateQuestion(editingIndex, updatedQuestion);
+    setPromptInput("");
+    setTypeInput("text");
+    setOptionsInput([]);
+    setOptionInput("");
+    setEditingIndex(-1);
+  };
+
+  const cancelEdit = () => {
+    setPromptInput("");
+    setTypeInput("text");
+    setOptionsInput([]);
+    setOptionInput("");
+    setEditingIndex(-1);
   };
 
   const deleteQuestion = (index) => {
@@ -64,7 +96,7 @@ const QuestionInput = ({
     <div>
       {/* Question input */}
       <Typography variant="h5" gutterBottom>
-        Add/Edit Question
+        {editingIndex !== -1 ? "Edit Question" : "Add/Edit Question"}
       </Typography>
       <TextField
         label="Prompt"
@@ -72,7 +104,6 @@ const QuestionInput = ({
         onChange={(e) => setPromptInput(e.target.value)}
         fullWidth
         margin="normal"
-        required
       />
       <TextField
         select
@@ -130,17 +161,35 @@ const QuestionInput = ({
           </Button>
         </div>
       )}
-      <Button
-        variant="contained"
-        onClick={addQuestion}
-        disabled={promptInput.trim() === ""}
-      >
-        Add Question
-      </Button>
+      {editingIndex !== -1 ? (
+        <div>
+          <Button variant="contained" onClick={updateQuestion}>
+            Update Question
+          </Button>
+          <Button variant="outlined" onClick={cancelEdit}>
+            Cancel
+          </Button>
+        </div>
+      ) : (
+        <Button
+          variant="contained"
+          onClick={addQuestion}
+          disabled={promptInput.trim() === ""}
+        >
+          Add Question
+        </Button>
+      )}
 
       {/* Display added questions */}
       {questions.map((question, index) => (
-        <div key={index}>
+        <Box
+          key={index}
+          sx={{
+            marginBottom: "1rem",
+            padding: "1rem",
+            border: "1px solid #ccc",
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             Prompt: {question.prompt}
           </Typography>
@@ -159,6 +208,9 @@ const QuestionInput = ({
               </OptionsList>
             </div>
           )}
+          <Button variant="outlined" onClick={() => editQuestion(index)}>
+            Edit
+          </Button>
           <Button
             variant="outlined"
             onClick={() => deleteQuestion(index)}
@@ -166,7 +218,7 @@ const QuestionInput = ({
           >
             Delete
           </Button>
-        </div>
+        </Box>
       ))}
     </div>
   );

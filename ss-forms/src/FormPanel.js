@@ -1,15 +1,8 @@
 import React, { useState } from "react";
-import {
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, FormControl, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import QuestionInput from "./QuestionInput";
+import { v4 as uuidv4 } from "uuid";
 
 const FormPanel = () => {
   // State variables for form data
@@ -36,17 +29,42 @@ const FormPanel = () => {
   };
 
   // Function to handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form name: ", formName);
-    console.log("Questions ", questions);
-    // Implement form submission logic here
-    // You can access the form name and questions array in the state variables (formName, questions)
-    // Send the data to the backend API for saving
+    const token = localStorage.getItem("token");
+    questions.forEach((question) => {
+      question.id = uuidv4();
+      question.answers = [];
+    });
+    try {
+      const response = await fetch("http://localhost:5000/api/forms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          formName,
+          formQuestions: questions,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Admin user created successfully
+        console.log(data);
+      } else {
+        // Username already exists or other error
+        console.error(data.msg);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
-    <Box sx={{ maxWidth: 600, margin: "0 auto" }}>
+    <Box sx={{ maxWidth: 600, margin: "0 auto", marginTop: "5rem" }}>
       {/* Form creation page */}
       <Typography variant="h4" sx={{ marginBottom: "1rem" }}>
         Create Form
