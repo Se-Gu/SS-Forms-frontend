@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { toast } from "react-toastify";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Box } from "@mui/system";
 import QuestionInput from "./QuestionInput";
 
 const FormPanel = () => {
@@ -37,19 +46,23 @@ const FormPanel = () => {
   };
 
   return (
-    <div>
+    <Box sx={{ maxWidth: 600, margin: "0 auto" }}>
       {/* Form creation page */}
-      <h2>Create Form</h2>
-      <form>
-        <label>
-          Form Name:
-          <input
-            type="text"
+      <Typography variant="h4" sx={{ marginBottom: "1rem" }}>
+        Create Form
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <FormControl fullWidth sx={{ marginBottom: "1rem" }}>
+          <TextField
+            id="form-name"
             value={formName}
             onChange={(e) => setFormName(e.target.value)}
             required
+            label="Form Name"
+            fullWidth
+            margin="normal"
           />
-        </label>
+        </FormControl>
 
         {/* Question input component */}
         <QuestionInput
@@ -59,11 +72,11 @@ const FormPanel = () => {
           handleDeleteQuestion={deleteQuestion}
         />
 
-        <button type="submit" onClick={handleSubmit}>
+        <Button variant="contained" type="submit" sx={{ marginTop: "1rem" }}>
           Save Form
-        </button>
+        </Button>
       </form>
-    </div>
+    </Box>
   );
 };
 

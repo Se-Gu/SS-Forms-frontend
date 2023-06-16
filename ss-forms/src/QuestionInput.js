@@ -1,4 +1,23 @@
 import React, { useState } from "react";
+import { Button, MenuItem, TextField, Typography } from "@mui/material";
+import { styled } from "@mui/system";
+
+const OptionsList = styled("ul")({
+  paddingLeft: 0,
+  marginTop: 0,
+  marginBottom: "1rem",
+  listStyleType: "none",
+});
+
+const OptionListItem = styled("li")({
+  display: "flex",
+  alignItems: "center",
+  marginBottom: "0.5rem",
+});
+
+const OptionInput = styled(TextField)({
+  marginRight: "0.5rem",
+});
 
 const QuestionInput = ({
   questions,
@@ -10,153 +29,143 @@ const QuestionInput = ({
   const [typeInput, setTypeInput] = useState("text");
   const [optionsInput, setOptionsInput] = useState([]);
   const [optionInput, setOptionInput] = useState("");
-  const [editIndex, setEditIndex] = useState(-1);
-  const [editOptionIndex, setEditOptionIndex] = useState(-1);
 
-  const addOptionHandler = () => {
+  const addQuestion = () => {
+    const question = {
+      prompt: promptInput,
+      type: typeInput,
+      options: optionsInput,
+    };
+    handleAddQuestion(question);
+    setPromptInput("");
+    setTypeInput("text");
+    setOptionsInput([]);
+    setOptionInput("");
+  };
+
+  const deleteQuestion = (index) => {
+    handleDeleteQuestion(index);
+  };
+
+  const addOption = () => {
     if (optionInput.trim() !== "") {
-      setOptionsInput((prevOptions) => [...prevOptions, optionInput]);
+      setOptionsInput([...optionsInput, optionInput]);
       setOptionInput("");
     }
   };
 
-  const updateOptionHandler = (index, value) => {
-    const updatedOptions = [...optionsInput];
-    updatedOptions[index] = value;
-    setOptionsInput(updatedOptions);
-  };
-
-  const deleteOptionHandler = (index) => {
+  const deleteOption = (index) => {
     const updatedOptions = [...optionsInput];
     updatedOptions.splice(index, 1);
     setOptionsInput(updatedOptions);
-    if (editOptionIndex === index) {
-      setEditOptionIndex(-1);
-    }
-  };
-
-  const addQuestionHandler = () => {
-    if (editIndex > -1) {
-      // Update existing question
-      const question = {
-        prompt: promptInput,
-        type: typeInput,
-        options: optionsInput,
-      };
-      handleUpdateQuestion(editIndex, question);
-      setEditIndex(-1);
-    } else {
-      // Add new question
-      const question = {
-        prompt: promptInput,
-        type: typeInput,
-        options: optionsInput,
-      };
-      handleAddQuestion(question);
-    }
-    setPromptInput("");
-    setTypeInput("text");
-    setOptionsInput([]);
-  };
-
-  const deleteQuestionHandler = (index) => {
-    handleDeleteQuestion(index);
-  };
-
-  const editQuestionHandler = (index) => {
-    const question = questions[index];
-    setPromptInput(question.prompt);
-    setTypeInput(question.type);
-    setOptionsInput(question.options);
-    setEditIndex(index);
   };
 
   return (
     <div>
-      <h2>Add/Edit Question</h2>
-      <label>
-        Prompt:
-        <input
-          type="text"
-          value={promptInput}
-          onChange={(e) => setPromptInput(e.target.value)}
-        />
-      </label>
-      <label>
-        Type:
-        <select
-          value={typeInput}
-          onChange={(e) => setTypeInput(e.target.value)}
-        >
-          <option value="text">Text</option>
-          <option value="longtext">Long Text</option>
-          <option value="numeric">Numeric</option>
-          <option value="dropdown">Dropdown</option>
-          <option value="checkbox">Checkbox</option>
-        </select>
-      </label>
-      {typeInput === "dropdown" || typeInput === "checkbox" ? (
+      {/* Question input */}
+      <Typography variant="h5" gutterBottom>
+        Add/Edit Question
+      </Typography>
+      <TextField
+        label="Prompt"
+        value={promptInput}
+        onChange={(e) => setPromptInput(e.target.value)}
+        fullWidth
+        margin="normal"
+        required
+      />
+      <TextField
+        select
+        label="Type"
+        value={typeInput}
+        onChange={(e) => setTypeInput(e.target.value)}
+        fullWidth
+        margin="normal"
+      >
+        <MenuItem value="text">Text</MenuItem>
+        <MenuItem value="longtext">Long Text</MenuItem>
+        <MenuItem value="numeric">Numeric</MenuItem>
+        <MenuItem value="dropdown">Dropdown</MenuItem>
+        <MenuItem value="checkbox">Checkbox</MenuItem>
+      </TextField>
+      {(typeInput === "dropdown" || typeInput === "checkbox") && (
         <div>
-          <label>
-            Options:
-            <input
-              type="text"
-              value={optionInput}
-              onChange={(e) => setOptionInput(e.target.value)}
-            />
-            <button onClick={addOptionHandler}>Add Option</button>
-          </label>
-          <ul>
+          <Typography variant="subtitle1">Options:</Typography>
+          <OptionsList>
             {optionsInput.map((option, index) => (
-              <li key={index}>
-                {editOptionIndex === index ? (
-                  <input
-                    type="text"
-                    value={option}
-                    onChange={(e) => updateOptionHandler(index, e.target.value)}
-                  />
-                ) : (
-                  <span>{option}</span>
-                )}
-                {editOptionIndex === index ? (
-                  <button onClick={() => setEditOptionIndex(-1)}>Done</button>
-                ) : (
-                  <>
-                    <button onClick={() => setEditOptionIndex(index)}>
-                      Edit
-                    </button>
-                    <button onClick={() => deleteOptionHandler(index)}>
-                      Delete
-                    </button>
-                  </>
-                )}
-              </li>
+              <OptionListItem key={index}>
+                <OptionInput
+                  value={option}
+                  onChange={(e) => {
+                    const updatedOptions = [...optionsInput];
+                    updatedOptions[index] = e.target.value;
+                    setOptionsInput(updatedOptions);
+                  }}
+                  fullWidth
+                />
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => deleteOption(index)}
+                >
+                  Delete
+                </Button>
+              </OptionListItem>
             ))}
-          </ul>
+          </OptionsList>
+          <TextField
+            label="Option"
+            value={optionInput}
+            onChange={(e) => setOptionInput(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={addOption}
+            disabled={optionInput.trim() === ""}
+          >
+            Add Option
+          </Button>
         </div>
-      ) : null}
-      <button type="button" onClick={addQuestionHandler}>
-        {editIndex > -1 ? "Update Question" : "Add Question"}
-      </button>
+      )}
+      <Button
+        variant="contained"
+        onClick={addQuestion}
+        disabled={promptInput.trim() === ""}
+      >
+        Add Question
+      </Button>
 
+      {/* Display added questions */}
       {questions.map((question, index) => (
         <div key={index}>
-          <p>Prompt: {question.prompt}</p>
-          <p>Type: {question.type}</p>
+          <Typography variant="h6" gutterBottom>
+            Prompt: {question.prompt}
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            Type: {question.type}
+          </Typography>
           {question.options.length > 0 && (
             <div>
-              <p>Options:</p>
-              <ul>
+              <Typography variant="subtitle1">Options:</Typography>
+              <OptionsList>
                 {question.options.map((option, optionIndex) => (
-                  <li key={optionIndex}>
-                    <span>{option}</span>
-                  </li>
+                  <OptionListItem key={optionIndex}>
+                    <Typography>{option}</Typography>
+                  </OptionListItem>
                 ))}
-              </ul>
+              </OptionsList>
             </div>
           )}
-          <button onClick={() => editQuestionHandler(index)}>Edit</button>
-          <button onClick={() => deleteQuestionHandler(index)}>Delete</button>
+          <Button
+            variant="outlined"
+            onClick={() => deleteQuestion(index)}
+            size="small"
+          >
+            Delete
+          </Button>
         </div>
       ))}
     </div>
