@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import QuestionInput from "./QuestionInput";
-import FormPreview from "./FormPreview";
 
 const FormPanel = () => {
   // State variables for form data
@@ -13,9 +12,25 @@ const FormPanel = () => {
     setQuestions([...questions, question]);
   };
 
+  // Function to handle updating a question
+  const updateQuestion = (index, question) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[index] = question;
+    setQuestions(updatedQuestions);
+  };
+
+  // Function to handle deleting a question
+  const deleteQuestion = (index) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions.splice(index, 1);
+    setQuestions(updatedQuestions);
+  };
+
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Form name: ", formName);
+    console.log("Questions ", questions);
     // Implement form submission logic here
     // You can access the form name and questions array in the state variables (formName, questions)
     // Send the data to the backend API for saving
@@ -25,7 +40,7 @@ const FormPanel = () => {
     <div>
       {/* Form creation page */}
       <h2>Create Form</h2>
-      <form onSubmit={handleSubmit}>
+      <form>
         <label>
           Form Name:
           <input
@@ -37,13 +52,17 @@ const FormPanel = () => {
         </label>
 
         {/* Question input component */}
-        <QuestionInput handleAddQuestion={addQuestion} />
+        <QuestionInput
+          questions={questions}
+          handleAddQuestion={addQuestion}
+          handleUpdateQuestion={updateQuestion}
+          handleDeleteQuestion={deleteQuestion}
+        />
 
-        <button type="submit">Save Form</button>
+        <button type="submit" onClick={handleSubmit}>
+          Save Form
+        </button>
       </form>
-
-      {/* Form preview component */}
-      <FormPreview formName={formName} questions={questions} />
     </div>
   );
 };
