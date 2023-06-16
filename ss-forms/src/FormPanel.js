@@ -3,6 +3,7 @@ import { Button, FormControl, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import QuestionInput from "./QuestionInput";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
 
 const FormPanel = () => {
   // State variables for form data
@@ -53,12 +54,18 @@ const FormPanel = () => {
 
       if (response.ok) {
         // Admin user created successfully
+        toast.success(data.msg);
         console.log(data);
+        setTimeout(() => {
+          window.location.href = "/FormPanel";
+        }, 1000);
       } else {
         // Username already exists or other error
-        console.error(data.msg);
+        toast.error(data.msg);
+        console.error(data);
       }
     } catch (error) {
+      toast.error("There was an error creating the form");
       console.error("Error:", error);
     }
   };
@@ -90,7 +97,12 @@ const FormPanel = () => {
           handleDeleteQuestion={deleteQuestion}
         />
 
-        <Button variant="contained" type="submit" sx={{ marginTop: "1rem" }}>
+        <Button
+          disabled={questions.length < 1}
+          variant="contained"
+          type="submit"
+          sx={{ marginTop: "1rem" }}
+        >
           Save Form
         </Button>
       </form>
