@@ -33,6 +33,11 @@ function Navbar() {
             Form Panel
           </Link>
         )}
+        {username && isAdmin && (
+          <Link to={"/editform"} className="panel-link">
+            Edit Form
+          </Link>
+        )}
       </div>
       <div className="right-content">
         {!username && (

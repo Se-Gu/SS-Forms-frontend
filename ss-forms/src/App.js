@@ -6,6 +6,7 @@ import Navbar from "./Navbar.js";
 import Login from "./Login.js";
 import Register from "./Register.js";
 import FormPanel from "./FormPanel.js";
+import EditForm from "./EditForm.js";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
@@ -19,6 +20,11 @@ function FormRoute() {
   return isAdmin ? <FormPanel /> : <Navigate to="/" />;
 }
 
+function EditRoute() {
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  return isAdmin ? <EditForm /> : <Navigate to="/" />;
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -30,6 +36,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<AdminRoute />} />
         <Route path="/formpanel" element={<FormRoute />} />
+        <Route path="/editform" element={<EditRoute />} />
         <Route path="/user" element={<User />} />
       </Routes>
     </BrowserRouter>
