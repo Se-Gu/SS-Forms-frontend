@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Button, MenuItem, Typography,Select } from "@mui/material";
+import { Button, MenuItem, Typography, Select } from "@mui/material";
 import { styled } from "@mui/system";
 import { toast } from "react-toastify";
 import QuestionInput from "./QuestionInput";
+import { v4 as uuidv4 } from "uuid";
 
 const CenteredContainer = styled("div")({
   display: "flex",
@@ -46,6 +47,7 @@ const EditForm = () => {
       });
 
       const data = await response.json();
+      console.log(data);
 
       if (!response.ok) {
         console.error(data);
@@ -62,13 +64,16 @@ const EditForm = () => {
   const deleteForm = async (formId) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://localhost:5000/api/forms/${formId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:5000/api/forms/${formId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
 
@@ -92,19 +97,28 @@ const EditForm = () => {
   };
 
   const addQuestion = (question) => {
-    setQuestions(prevQuestions => [...prevQuestions, question]);
+    setQuestions((prevQuestions) => [...prevQuestions, question]);
   };
 
   const updateQuestion = (index, updatedQuestion) => {
-    setQuestions(prevQuestions => prevQuestions.map((question, i) => i === index ? updatedQuestion : question));
+    setQuestions((prevQuestions) =>
+      prevQuestions.map((question, i) =>
+        i === index ? updatedQuestion : question
+      )
+    );
   };
 
   const deleteQuestion = (index) => {
-    setQuestions(prevQuestions => prevQuestions.filter((_, i) => i !== index));
+    setQuestions((prevQuestions) =>
+      prevQuestions.filter((_, i) => i !== index)
+    );
   };
 
   const updateForm = async () => {
     const token = localStorage.getItem("token");
+    questions.forEach((question) => {
+      question.id = uuidv4();
+    });
     const updatedForm = {
       ...selectedForm,
       formQuestions: questions,

@@ -16,6 +16,8 @@ const User = () => {
   const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState("");
   const [answers, setAnswers] = useState([]);
+  const [updating, setUpdating] = useState(false);
+  const username = localStorage.getItem("username");
 
   useEffect(() => {
     const fetchForms = async () => {
@@ -55,15 +57,34 @@ const User = () => {
       (form) => form.formName === selectedFormName
     );
     setSelectedForm(selectedForm);
+    const questionArr = selectedForm.formQuestions;
+    const qweqwe = questionArr.map((question) => ({
+      question: question.prompt,
+      answer: handleExistingAnswer(question),
+      questionId: question.id,
+    }));
+    console.log(qweqwe);
     setAnswers(
-      selectedForm.formQuestions.map((question, index) => ({
+      questionArr.map((question) => ({
         question: question.prompt,
         answer: [],
-        questionId: question.id, // using the index as the questionId
+        questionId: question.id,
       }))
     );
   };
-  
+
+  const handleExistingAnswer = (question) => {
+    if (!question?.answers) return [];
+    else {
+      question?.answers?.forEach((theAnswer) => {
+        if (theAnswer.username === username) {
+          setUpdating(true);
+          console.log(theAnswer?.answer);
+          return theAnswer?.answer;
+        }
+      });
+    }
+  };
 
   const handleAnswerChange = (event, index) => {
     const updatedAnswers = [...answers];
@@ -106,9 +127,9 @@ const User = () => {
       if (response.ok) {
         toast.success(data.msg);
         console.log(data);
-        setTimeout(() => {
-          window.location.href = "/User";
-        }, 1000);
+        // setTimeout(() => {
+        //   window.location.href = "/User";
+        // }, 1000);
       } else {
         toast.error(data.msg);
         console.error(data);
@@ -150,7 +171,7 @@ const User = () => {
                 <Typography variant="subtitle1">{question.prompt}</Typography>
                 {question?.type === "text" && (
                   <TextField
-                    value={answers[index].answer}
+                    value={answers[index]?.answer}
                     onChange={(e) => handleAnswerChange(e, index)}
                     required
                     label="Answer"
@@ -162,7 +183,7 @@ const User = () => {
                   <TextField
                     multiline
                     rows={4}
-                    value={answers[index].answer}
+                    value={answers[index]?.answer}
                     onChange={(e) => handleAnswerChange(e, index)}
                     required
                     label="Answer"
@@ -173,7 +194,7 @@ const User = () => {
                 {question?.type === "numeric" && (
                   <TextField
                     type="number"
-                    value={answers[index].answer}
+                    value={answers[index]?.answer}
                     onChange={(e) => handleAnswerChange(e, index)}
                     required
                     label="Answer"
@@ -184,7 +205,7 @@ const User = () => {
                 {question?.type === "dropdown" && (
                   <FormControl fullWidth>
                     <Select
-                      value={answers[index].answer}
+                      value={answers[index]?.answer}
                       onChange={(e) => handleAnswerChange(e, index)}
                       displayEmpty
                       inputProps={{ "aria-label": "Select an option" }}
@@ -207,7 +228,7 @@ const User = () => {
                         key={option}
                         control={
                           <Checkbox
-                            checked={answers[index].answer.includes(option)}
+                            checked={answers[index]?.answer.includes(option)}
                             onChange={(e) =>
                               handleCheckboxChange(e, index, option)
                             }
@@ -226,7 +247,7 @@ const User = () => {
               type="submit"
               sx={{ marginTop: "1rem" }}
             >
-              Submit
+              {updating ? "Update" : "Submit"}
             </Button>
           </div>
         )}
