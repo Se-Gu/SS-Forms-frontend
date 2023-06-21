@@ -17,50 +17,6 @@ const User = () => {
   const [selectedForm, setSelectedForm] = useState("");
   const [answers, setAnswers] = useState([]);
 
-  // Mock data for forms
-  const mockForms = [
-    {
-      formName: "Form 1",
-      formQuestions: [
-        {
-          prompt: "Question 1",
-          type: "text",
-          options: "",
-          answers: [],
-        },
-        {
-          prompt: "Question 2",
-          type: "dropdown",
-          options: "Option 1,Option 2,Option 3",
-          answers: [],
-        },
-        {
-          prompt: "Question 3",
-          type: "checkbox",
-          options: "Option A,Option B,Option C",
-          answers: [],
-        },
-      ],
-    },
-    {
-      formName: "Form 2",
-      formQuestions: [
-        {
-          prompt: "Question 4",
-          type: "numeric",
-          options: "",
-          answers: [],
-        },
-        {
-          prompt: "Question 5",
-          type: "longtext",
-          options: "",
-          answers: [],
-        },
-      ],
-    },
-  ];
-
   useEffect(() => {
     const fetchForms = async () => {
       const token = localStorage.getItem("token");
@@ -100,13 +56,14 @@ const User = () => {
     );
     setSelectedForm(selectedForm);
     setAnswers(
-      selectedForm.formQuestions.map((question) => ({
+      selectedForm.formQuestions.map((question, index) => ({
         question: question.prompt,
         answer: [],
-        questionId: question.id,
+        questionId: question.id, // using the index as the questionId
       }))
     );
   };
+  
 
   const handleAnswerChange = (event, index) => {
     const updatedAnswers = [...answers];
@@ -129,6 +86,7 @@ const User = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(JSON.stringify(answers));
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(

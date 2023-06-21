@@ -35,7 +35,12 @@ function Navbar() {
         )}
         {username && isAdmin && (
           <Link to={"/editform"} className="panel-link">
-            Edit Form
+            Edit Forms
+          </Link>
+        )}
+        {username && isAdmin && (
+          <Link to={"/answers"} className="panel-link">
+            Answers
           </Link>
         )}
       </div>

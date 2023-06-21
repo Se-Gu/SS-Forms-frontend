@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-    Button,
-    MenuItem,
-    Select,
-    Typography,
-    FormControl,
-    TextField, // Add this import statement
-  } from "@mui/material";
+import { Button, MenuItem, Typography,Select } from "@mui/material";
 import { styled } from "@mui/system";
 import { toast } from "react-toastify";
+import QuestionInput from "./QuestionInput";
 
 const CenteredContainer = styled("div")({
   display: "flex",
@@ -97,23 +91,23 @@ const EditForm = () => {
     setQuestions(selectedForm?.formQuestions || []);
   };
 
-  const handleQuestionChange = (event, index) => {
-    const updatedQuestions = [...questions];
-    updatedQuestions[index].prompt = event.target.value;
-    setQuestions(updatedQuestions);
+  const addQuestion = (question) => {
+    setQuestions(prevQuestions => [...prevQuestions, question]);
   };
-  
-  const handleTypeChange = (event, index) => {
-    const updatedQuestions = [...questions];
-    updatedQuestions[index].type = event.target.value;
-    setQuestions(updatedQuestions);
+
+  const updateQuestion = (index, updatedQuestion) => {
+    setQuestions(prevQuestions => prevQuestions.map((question, i) => i === index ? updatedQuestion : question));
   };
-  
+
+  const deleteQuestion = (index) => {
+    setQuestions(prevQuestions => prevQuestions.filter((_, i) => i !== index));
+  };
+
   const updateForm = async () => {
     const token = localStorage.getItem("token");
     const updatedForm = {
       ...selectedForm,
-      formQuestions: questions
+      formQuestions: questions,
     };
 
     delete updatedForm._id; // Make sure not to include _id in updatedForm
@@ -130,9 +124,9 @@ const EditForm = () => {
           body: JSON.stringify(updatedForm),
         }
       );
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         toast.success(data.msg);
         fetchForms(); // Update the forms list
@@ -178,40 +172,20 @@ const EditForm = () => {
           </Button>
         </FormListItem>
       </FormList>
-      {questions.length > 0 && (
-        <div>
-          {questions.map((question, index) => (
-            <FormControl key={question.id} fullWidth sx={{ marginBottom: "1rem" }}>
-              <TextField
-                label="Question"
-                defaultValue={question.prompt}
-                onBlur={(event) => handleQuestionChange(event, index)}
-              />
-              <Select
-                label="Type"
-                value={question.type}
-                onChange={(event) => handleTypeChange(event, index)}
-                displayEmpty
-                inputProps={{ "aria-label": "Select a type" }}
-              >
-                <MenuItem value={"text"}>Text</MenuItem>
-                <MenuItem value={"longtext"}>Long Text</MenuItem>
-                <MenuItem value={"numeric"}>Numeric</MenuItem>
-                <MenuItem value={"dropdown"}>Dropdown</MenuItem>
-                <MenuItem value={"checkbox"}>Checkbox</MenuItem>
-              </Select>
-            </FormControl>
-          ))}
-          <Button
-            variant="contained"
-            sx={{ marginTop: "1rem" }}
-            fullWidth
-            onClick={updateForm}
-          >
-            Save Form
-          </Button>
-        </div>
-      )}
+      <QuestionInput
+        questions={questions}
+        handleAddQuestion={addQuestion}
+        handleUpdateQuestion={updateQuestion}
+        handleDeleteQuestion={deleteQuestion}
+      />
+      <Button
+        variant="contained"
+        sx={{ marginTop: "1rem" }}
+        fullWidth
+        onClick={updateForm}
+      >
+        Save Form
+      </Button>
     </CenteredContainer>
   );
 };

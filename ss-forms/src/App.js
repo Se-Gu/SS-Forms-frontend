@@ -7,6 +7,7 @@ import Login from "./Login.js";
 import Register from "./Register.js";
 import FormPanel from "./FormPanel.js";
 import EditForm from "./EditForm.js";
+import Answers from "./Answer";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
@@ -25,6 +26,11 @@ function EditRoute() {
   return isAdmin ? <EditForm /> : <Navigate to="/" />;
 }
 
+function AnswerRoute() {
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  return isAdmin ? <Answers /> : <Navigate to="/" />;
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -37,6 +43,7 @@ function App() {
         <Route path="/admin" element={<AdminRoute />} />
         <Route path="/formpanel" element={<FormRoute />} />
         <Route path="/editform" element={<EditRoute />} />
+        <Route path="/answers" element={<AnswerRoute />} />
         <Route path="/user" element={<User />} />
       </Routes>
     </BrowserRouter>
