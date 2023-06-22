@@ -52,22 +52,17 @@ const User = () => {
   }, []);
 
   const handleFormChange = (event) => {
+    setUpdating(false);
     const selectedFormName = event.target.value;
     const selectedForm = forms.find(
       (form) => form.formName === selectedFormName
     );
     setSelectedForm(selectedForm);
     const questionArr = selectedForm.formQuestions;
-    const qweqwe = questionArr.map((question) => ({
-      question: question.prompt,
-      answer: handleExistingAnswer(question),
-      questionId: question.id,
-    }));
-    console.log(qweqwe);
     setAnswers(
       questionArr.map((question) => ({
         question: question.prompt,
-        answer: [],
+        answer: handleExistingAnswer(question),
         questionId: question.id,
       }))
     );
@@ -76,13 +71,12 @@ const User = () => {
   const handleExistingAnswer = (question) => {
     if (!question?.answers) return [];
     else {
-      question?.answers?.forEach((theAnswer) => {
+      for (const theAnswer of question.answers) {
         if (theAnswer.username === username) {
           setUpdating(true);
-          console.log(theAnswer?.answer);
-          return theAnswer?.answer;
+          return theAnswer.answer;
         }
-      });
+      }
     }
   };
 
@@ -127,9 +121,9 @@ const User = () => {
       if (response.ok) {
         toast.success(data.msg);
         console.log(data);
-        // setTimeout(() => {
-        //   window.location.href = "/User";
-        // }, 1000);
+        setTimeout(() => {
+          window.location.href = "/User";
+        }, 1000);
       } else {
         toast.error(data.msg);
         console.error(data);
