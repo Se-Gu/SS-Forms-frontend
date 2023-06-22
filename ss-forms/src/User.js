@@ -89,11 +89,11 @@ const User = () => {
   const handleCheckboxChange = (event, index, option) => {
     const updatedAnswers = [...answers];
     if (event.target.checked) {
-      updatedAnswers[index].answer.push(option);
+      updatedAnswers[index].answer?.push(option);
     } else {
-      const optionIndex = updatedAnswers[index].answer.indexOf(option);
+      const optionIndex = updatedAnswers[index].answer?.indexOf(option);
       if (optionIndex !== -1) {
-        updatedAnswers[index].answer.splice(optionIndex, 1);
+        updatedAnswers[index].answer?.splice(optionIndex, 1);
       }
     }
     setAnswers(updatedAnswers);
@@ -222,7 +222,7 @@ const User = () => {
                         key={option}
                         control={
                           <Checkbox
-                            checked={answers[index]?.answer.includes(option)}
+                            checked={answers[index]?.answer?.includes(option)}
                             onChange={(e) =>
                               handleCheckboxChange(e, index, option)
                             }
